@@ -16,6 +16,7 @@ class Graph:
     self.distances[(from_node, to_node)] = distance
 
 grafo = Graph()
+reqs = []
 
 constroi = True
 for line in fileinput.input():
@@ -33,7 +34,11 @@ for line in fileinput.input():
 	else:
 		# requisicoes
 		req = line.split(' ')
-		print(req)
+		d = {'partida':req[0],'chegada':req[1]}
+		if len(req) > 2: #viagem em andamento
+			#d['atual'] = req[2]
+			d['partida'] = req[2] # enunciado ambiguo
+		reqs.append(d)
 
 
 
