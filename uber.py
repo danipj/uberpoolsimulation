@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+from copy import copy
 
 class Graph:
     def __init__(self):
@@ -23,7 +24,7 @@ class Graph:
         tdist[start] = 0
         # neighbour that is nearest to the origin
         preceding_node = {}
-        unvisited = self.nodes
+        unvisited = copy(self.nodes)
 
         while unvisited:
             current = unvisited.intersection(tdist.keys())
@@ -80,12 +81,13 @@ for line in file:
         if len(req) > 2: #viagem em andamento
             #d['atual'] = req[2]
             d['partida'] = req[2].strip() # enunciado ambiguo
+        d['tpadrao'] = grafo.min_path(d['partida'],d['chegada'])[0]
         reqs.append(d)
 
-print(grafo.edges)
-print(grafo.nodes)
 file.close()
-print(grafo.min_path('0','1'))
+
+
+print (reqs)
 
 
 
