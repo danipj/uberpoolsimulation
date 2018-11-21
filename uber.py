@@ -1,4 +1,4 @@
-import fileinput
+import sys
 from collections import defaultdict
 
 class Graph:
@@ -12,7 +12,7 @@ class Graph:
 
     def add_edge(self, from_node, to_node, distance):
         self.edges[from_node].append(to_node)
-        self.edges[to_node].append(from_node)
+        #self.edges[to_node].append(from_node)
         self.dist[(from_node, to_node)] = int(distance)
 
     def dijkstra(self, start, maxD=1e309):
@@ -61,7 +61,8 @@ grafo = Graph()
 reqs = []
 
 constroi = True
-for line in fileinput.input():
+file = open(sys.argv[1], 'r') 
+for line in file:
     if len(line) < 3:
         constroi = False
         continue
@@ -72,7 +73,6 @@ for line in fileinput.input():
         if chegada not in grafo.nodes:
             grafo.add_node(chegada)
         grafo.add_edge(partida,chegada,tempo)
-        line = input()
     else:
         # requisicoes
         req = line.split(' ')
@@ -81,7 +81,10 @@ for line in fileinput.input():
             #d['atual'] = req[2]
             d['partida'] = req[2].strip() # enunciado ambiguo
         reqs.append(d)
-fileinput.close()
+
+print(grafo.edges)
+print(grafo.nodes)
+file.close()
 print(grafo.min_path('0','1'))
 
 
