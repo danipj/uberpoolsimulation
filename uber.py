@@ -63,6 +63,7 @@ reqs = []
 
 constroi = True
 file = open(sys.argv[1], 'r') 
+numero = 0
 for line in file:
     if len(line) < 3:
         constroi = False
@@ -76,8 +77,9 @@ for line in file:
         grafo.add_edge(partida,chegada,tempo)
     else:
         # requisicoes
+        numero +=1
         req = line.split(' ')
-        d = {'partida':req[0].strip(),'chegada':req[1].strip()}
+        d = {'n': numero, 'partida':req[0].strip(),'chegada':req[1].strip()}
         if len(req) > 2: #viagem em andamento
             #d['atual'] = req[2]
             d['partida'] = req[2].strip() # enunciado ambiguo
@@ -85,9 +87,70 @@ for line in file:
         reqs.append(d)
 
 file.close()
+res = []
+for r in reqs:
+    incs = []
+    for s in reqs:
+        if r == s:
+            continue
+        #testar todos os caminhos e guardar o menor
+        menor = 20
+        #A C D B
+        ttotal = grafo.min_path(r['partida'],s['partida'])[0]+s['tpadrao']+grafo.min_path(s['chegada'],r['chegada'])[0]
+        inc = ttotal/r['tpadrao']
+        # nesse caso inc2 é sempre 1
+        if inc <= 1.4:
+            menor = inc
+            cam = (r['partida'],s['partida'],s['chegada'],r['chegada'])
+        #A C B D
+        ttotal = grafo.min_path(r['partida'],s['partida'])[0] +grafo.min_path(s['partida'],r['chegada'])[0]+grafo.min_path(r['chegada'],s['chegada'])[0]
+        inc = max(ttotal/r['tpadrao'],ttotal/s['tpadrao'])
+        if inc < menor and inc <= 1.4:
+            menor = inc
+            cam = (r['partida'],s['partida'],r['chegada'],s['chegada'])
+        #C A D B
+        ttotal = grafo.min_path(s['partida'],r['partida'])[0] +grafo.min_path(r['partida'],s['chegada'])[0]+grafo.min_path(s['chegada'],r['chegada'])[0]
+        inc = max(ttotal/r['tpadrao'],ttotal/s['tpadrao'])
+        if inc < menor and inc <= 1.4:
+            menor = inc
+            cam = (s['partida'],r['partida'],s['chegada'],r['chegada'])
+        #C A B D
+        ttotal = grafo.min_path(s['partida'],r['partida'])[0] +r['tpadrao']+grafo.min_path(r['chegada'],s['chegada'])[0]
+        inc = ttotal/s['tpadrao'] # nesse caso inc1 é sempre 1
+        if inc < menor and inc <= 1.4:
+            menor = inc
+            cam = (s['partida'],r['partida'],r['chegada'],s['chegada'])
+        incs.append((menor,cam,s['n']))
+    # incs tem todas as menores inconveniencias com todos os pares de r
+    # achar a menor das inconveniencias
+    menor = (20,0)
+    for x in incs:
+        if x[0] < menor[0]:
+            menor = x
+    res.append((r['n'],menor))
+# achar os menores pares
+
+while len(res) > 1:
+    menor = (0,(20,0))
+    for x in res:
+        if x[1][0] < menor[1][0]:
+            menor = x
+    # encontrar par
+    for x in res:
+        if x[0] == menor[1][2]:
+            match = x        
+    res.remove(match)
+    res.remove(menor)
+    print ('passageiros:',menor[0],match[0],'percurso:',' '.join(menor[1][1]))
+
+if len(res)==1:
+    # encontrar percurso original
+    for x in reqs:
+        if x['n']==res[0][0]:
+            p = x
+    print('passageiro:' ,p['n'],'percurso:',p['partida'],p['chegada'])
 
 
-print (reqs)
 
 
 
