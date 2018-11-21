@@ -14,7 +14,7 @@ class Graph:
     def add_edge(self, from_node, to_node, distance):
         self.edges[from_node].append(to_node)
         #self.edges[to_node].append(from_node)
-        self.dist[(from_node, to_node)] = int(distance)
+        self.dist[(from_node, to_node)] = float(distance)
 
     def dijkstra(self, start, maxD=1e309):
         """Returns a map of nodes to distance from start and a map of nodes to
@@ -69,7 +69,7 @@ for line in file:
         constroi = False
         continue
     if constroi:
-        partida, chegada, tempo = line.split(' ')
+        partida, chegada, tempo = line.strip().split(' ')
         if partida not in grafo.nodes:
             grafo.add_node(partida)
         if chegada not in grafo.nodes:
@@ -123,32 +123,36 @@ for r in reqs:
         incs.append((menor,cam,s['n']))
     # incs tem todas as menores inconveniencias com todos os pares de r
     # achar a menor das inconveniencias
-    menor = (20,0)
+    menor = (21,0)
     for x in incs:
         if x[0] < menor[0]:
             menor = x
     res.append((r['n'],menor))
 # achar os menores pares
 
-while len(res) > 1:
-    menor = (0,(20,0))
+while len(res) > 0:
+    menor = (0,(22,0))
     for x in res:
         if x[1][0] < menor[1][0]:
             menor = x
     # encontrar par
     for x in res:
         if x[0] == menor[1][2]:
-            match = x        
-    res.remove(match)
-    res.remove(menor)
-    print ('passageiros:',menor[0],match[0],'percurso:',' '.join(menor[1][1]))
+            match = x 
 
-if len(res)==1:
-    # encontrar percurso original
-    for x in reqs:
-        if x['n']==res[0][0]:
-            p = x
-    print('passageiro:' ,p['n'],'percurso:',p['partida'],p['chegada'])
+    if match not in res:
+        # encontrar percurso original
+        for x in reqs:
+            if x['n']==menor[0]:
+                p = x
+        print('passageiro:' ,p['n'],'percurso:',p['partida'],p['chegada'])
+        res.remove(menor)
+    else:
+        res.remove(match)
+        res.remove(menor)
+        print ('passageiros:',menor[0],match[0],'percurso:',' '.join(menor[1][1]))
+
+
 
 
 
